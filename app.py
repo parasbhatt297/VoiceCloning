@@ -1,7 +1,9 @@
-
 import streamlit as st
 from TTS.api import TTS
 import os
+import re
+from num2words import num2words
+from number_normalizer import normalize_numbers
 VOICE_DIR = "voices"
 
 def get_voice_list():
@@ -80,12 +82,14 @@ if st.button("Generate Speech"):
     elif selected_voice == "No voices available":
         st.error("Please upload a voice first.")
     else:
-        with st.spinner("Generating speech..."):
-            tts.tts_to_file(
-                text=text,
-                speaker_wav=REFERENCE_WAV,
-                language=LANGUAGE,
-                file_path=OUTPUT_WAV
-            )
+       with st.spinner("Generating speech..."):
+        normalized_text = normalize_numbers(text, lang="en")
+
+        tts.tts_to_file(
+        text=normalized_text,
+        speaker_wav=REFERENCE_WAV,
+        language=LANGUAGE,
+        file_path=OUTPUT_WAV
+        )
         st.success("Speech generated successfully!")
         st.audio(OUTPUT_WAV)
